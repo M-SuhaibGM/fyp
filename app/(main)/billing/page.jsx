@@ -1,7 +1,6 @@
 "use client";
 import { useUser } from "@/app/provider";
-import { supabase } from "@/services/supabaseClient";
-import { CreditCard, PlusCircle } from "lucide-react";
+import { ArrowRight, CreditCard, PlusCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import PayButton from "./_components/PayButton";
 
@@ -55,9 +54,9 @@ function Billing() {
             {creditsLeft} interviews left
           </div>
 
-          <button className="mt-5 flex items-center gap-2 bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 cursor-pointer">
-            <PlusCircle className="w-5 h-5" />
+          <button className="mt-5 flex items-center gap-2 bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 ">
             Add More Credits
+            <ArrowRight className="w-10 h-10" />
           </button>
         </div>
 

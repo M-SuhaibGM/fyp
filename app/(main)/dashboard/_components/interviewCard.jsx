@@ -12,12 +12,7 @@ function InterviewCard({ interview, viewDetail = false, index }) {
     navigator.clipboard.writeText(url);
     toast("Copied!!!");
   };
-  const onSend = () => {
-    window.location.href =
-      "mailto:vipin.sao@ssipmt.com?subject=AIrcruiter interview link & body=Interview Link=" +
-      url;
-  };
-  
+
   return (
     <div key={index} className="mt-4 p-5 bg-white rounded-lg border shadow-2xl">
       <div className="flex items-center justify-between">

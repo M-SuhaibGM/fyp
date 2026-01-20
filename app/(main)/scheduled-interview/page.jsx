@@ -2,12 +2,11 @@
 import { useUser } from "@/app/provider";
 import { supabase } from "@/services/supabaseClient";
 import React, { useEffect, useState } from "react";
-import InterviewCard from "../dashboard/_components/interviewCard";
 import { Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-// 👈 Import the Skeleton component
-import InterviewCardSkeleton from "../_components/InterviewCardSkeleton";
+import CandidateReviewCard from "./_components/CandidateReviewCard";
+import CandidateReviewSkeleton from "./_components/loading";
 
 function ScheduledInterview() {
   const { user } = useUser();
@@ -49,10 +48,8 @@ function ScheduledInterview() {
   if (isLoading) {
     // State 1: Loading (Show 3 Skeletons)
     content = (
-      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 mt-5">
-        <InterviewCardSkeleton />
-        <InterviewCardSkeleton />
-        <InterviewCardSkeleton />
+      <div className="">
+        <CandidateReviewSkeleton/>
       </div>
     );
   } else if (interviewList?.length === 0) {
@@ -69,9 +66,9 @@ function ScheduledInterview() {
   } else {
     // State 3: Data Available (Show cards)
     content = (
-      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="">
         {interviewList?.map((interview, index) => (
-          <InterviewCard
+          <CandidateReviewCard
             interview={interview}
             // Use interview.id for a unique key if available
             key={interview.id || index}
@@ -87,7 +84,7 @@ function ScheduledInterview() {
       <h2 className=" font-bold text-2xl">
         Interview List with Candidate Report
       </h2>
-      {content} {/* Render the calculated content based on state */}
+      {content}
     </div>
   );
 }

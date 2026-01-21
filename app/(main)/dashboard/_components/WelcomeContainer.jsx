@@ -9,10 +9,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";        
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { supabase } from "@/services/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CoinsIcon, DollarSign } from "lucide-react";
 
 function WelcomeContainer() {
   const { user, setUser } = useUser();
@@ -44,7 +45,7 @@ function WelcomeContainer() {
             variant="outline"
             className="flex items-center gap-2 cursor-pointer  text-white bg-blue-600"
           >
-            <Image src="/dollar.png" height={3} width={3} alt="coin" className="h-5 w-5" />
+            <CoinsIcon className="h-7 w-7" />
 
             {user?.credits === 0 ? (
               "Add Credits"

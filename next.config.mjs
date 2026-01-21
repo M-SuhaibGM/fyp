@@ -7,8 +7,9 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https", // Specify the protocol (https)
-        hostname: "lh3.googleusercontent.com", // Specify the hostname
-        // pathname: "/**", // Wildcard for any path
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/**',
       },
     ],
   },

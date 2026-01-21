@@ -16,7 +16,6 @@ function InterviewDetails() {
   }, [user]);
 
   useEffect(() => {
-    console.log(interviewDetail);
   }, [interviewDetail]);
   const GetInterviewDetail = async () => {
     const { data, error } = await supabase

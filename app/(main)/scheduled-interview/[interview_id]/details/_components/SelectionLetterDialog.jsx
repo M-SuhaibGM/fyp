@@ -16,8 +16,8 @@ function SelectionLetterDialog({ candidate, recommendation }) {
 
   // Calculate average score
   const ratings = candidate?.feedback?.feedback?.rating;
-  const avgScore = ratings 
-    ? (ratings.technicalSkills + ratings.communication + ratings.problemSolving + ratings.experience) / 4 
+  const avgScore = ratings
+    ? (ratings.technicalSkills + ratings.communication + ratings.problemSolving + ratings.experience) / 4
     : 0;
 
   const letterTemplate = `
@@ -42,7 +42,7 @@ The Recruitment Team at ${companyName}
           email: candidate?.userEmail,
           subject: `Job Application Update - ${companyName}`,
           message: letterTemplate,
-          company:companyName,
+          company: companyName,
         }),
       });
 
@@ -61,9 +61,8 @@ The Recruitment Team at ${companyName}
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className={`p-5 rounded-md ${
-            recommendation === "No" ? "bg-red-700" : "bg-green-700"
-          }`}
+          className={`p-5 rounded-md ${recommendation === "No" ? "bg-red-700" : "bg-green-700"
+            }`}
         >
           Send Msg
         </Button>

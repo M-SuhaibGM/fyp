@@ -5,283 +5,230 @@ import { useRouter } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
 import { supabase } from "@/services/supabaseClient";
 import Image from "next/image";
-import Link from "next/link";
+import { CheckCircle2, PlayCircle, Sparkles, Mic, BarChart3, Users, X } from "lucide-react";
 
 export default function LandingPage() {
   const router = useRouter();
   const [hasSession, setHasSession] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       setHasSession(!!data.session);
     };
-
     checkSession();
   }, []);
 
-  const handleDashboardClick = () => {
-    if (hasSession) {
-      router.push("/dashboard");
-    } else {
-      toast.error("Please sign in to access the dashboard.");
-    }
-  };
-
-  const handleSignInClick = () => {
-    if (hasSession) {
-      router.push("/dashboard");
-    } else {
-      router.push("/auth");
-    }
-  };
-
-  const handleCreateInterview = () => {
-    if (hasSession) {
-      router.push("/dashboard");
-    } else {
-      router.push("/auth");
-    }
+  const handleAction = () => {
+    if (hasSession) router.push("/dashboard");
+    else router.push("/auth");
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-[#f9fbff] to-[#f0f4ff] text-gray-900 select-none">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-700">
       <Toaster position="top-center" />
 
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 shadow-sm bg-white">
-        <div className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-          <Image
-            src={"/logo.png"}
-            alt="logo"
-            height={160}
-            width={160}
-            // className="w-[45px] h-[45px]"
-          />
-          <span className="text-black">AI</span>Recruiter
-        </div>
-        <nav className="hidden md:flex gap-6 text-sm">
-          <a href="#features" className="hover:text-blue-600">
-            Features
-          </a>
-          <a href="#whatsnew" className="hover:text-blue-600">
-            What's New
-          </a>
-          <a href="#pricing" className="hover:text-blue-600">
-            Pricing
-          </a>
-        </nav>
-        <div className="flex gap-2">
-          <Button
-            className="bg-green-400 text-white hover:bg-green-700 cursor-pointer"
-            onClick={handleSignInClick}
-          >
-            {hasSession ? "Go to Dashboard" : "Sign In"}
-          </Button>
+      {/* Navigation */}
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
+        <div className="container mx-auto flex h-16 items-center justify-between px-6">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/")}>
+            <Image src="/logo.png" alt="logo" height={35} width={35} />
+            <span className="text-xl font-bold tracking-tight">
+              <span className="text-blue-600">AI</span>Recruiter
+            </span>
+          </div>
+
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
+            <a href="#whatsnew" className="hover:text-blue-600 transition-colors">What's New</a>
+            <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Button
+              variant={hasSession ? "default" : "ghost"}
+              className={hasSession ? "bg-blue-600 hover:bg-blue-700" : "text-slate-600"}
+              onClick={handleAction}
+            >
+              {hasSession ? "Dashboard" : "Login"}
+            </Button>
+            {!hasSession && (
+              <Button className="bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-200" onClick={handleAction}>
+                Get Started
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center px-10 md:px-20 py-16">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            AI-Powered{" "}
-            <span className="text-blue-600">Interview Assistant</span>
-            <br />
-            for Modern Recruiters
+      <section className="relative overflow-hidden pt-16 pb-24 md:pt-24 md:pb-32">
+        <div className="container mx-auto px-6 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-semibold mb-6 animate-fade-in">
+            <Sparkles className="w-3 h-3" />
+            <span>Next Gen Hiring Experience</span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-[1.1]">
+            Conduct Interviews with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">AI Precision</span>
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Let our AI voice agent conduct candidate interviews while you focus
-            on finding the perfect match. Save time, reduce bias, and improve
-            your hiring process.
+
+          <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Automate your screening process with our AI voice agents. Save 40+ hours per week
+            while finding higher quality talent with zero bias.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Button
-              className="bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
-              onClick={handleCreateInterview}
-            >
-              Create Interview
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6 rounded-xl shadow-xl shadow-blue-200" onClick={handleAction}>
+              Start Free Trial
             </Button>
-            <a href={"/demo.mp4"} target="_blank" rel={"noopener noreferrer"}>
-              <Button
-                variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-100 cursor-pointer"
-              >
-                Watch Demo
+            <a href="/demo.mp4" target="_blank">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 rounded-xl border-slate-200 bg-white">
+                <PlayCircle className="mr-2 h-5 w-5 text-blue-600" /> Watch Demo
               </Button>
             </a>
           </div>
-        </div>
-        <div className="flex justify-center">
-          <img
-            src="/dashboard.png"
-            alt="Dashboard Preview"
-            className="rounded-xl shadow-lg max-w-full"
-          />
-        </div>
-      </main>
 
-      {/* Features Section */}
-      <section id="features" className="bg-white py-16 px-6 md:px-20">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-10">
-          Key Features
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 bg-gray-50 rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">
-              Mock Interview Sessions
-            </h3>
-            <p className="text-gray-600">
-              Simulate real-world interviews with AI-driven questions tailored
-              to your domain.
-            </p>
-          </div>
-          <div className="p-6 bg-gray-50 rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">Detailed Feedback</h3>
-            <p className="text-gray-600">
-              Receive insights on your communication, confidence, and answer
-              quality.
-            </p>
-          </div>
-          <div className="p-6 bg-gray-50 rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
-            <p className="text-gray-600">
-              Monitor your improvement over time with session history and
-              analytics.
-            </p>
+          {/* Decorative Dashboard Image */}
+          <div className="relative mx-auto max-w-5xl group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+            <div className="relative bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden">
+              <img src="/dashboard.png" alt="Dashboard Preview" className="w-full h-auto" />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* What's New Section */}
-      <section
-        id="whatsnew"
-        className="bg-gradient-to-br from-blue-50 to-blue-100 py-16 px-6 md:px-20"
-      >
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-10">
-          What's New
-        </h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">🔥 AI Voice Support</h3>
-            <p className="text-gray-700">
-              Experience seamless voice interviews using real-time speech
-              recognition.
-            </p>
+      {/* Features - Bento Grid Style */}
+      <section id="features" className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-blue-600 font-semibold tracking-wide uppercase text-sm mb-3">Capabilities</h2>
+            <p className="text-3xl md:text-4xl font-bold text-slate-900">Everything you need to scale</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">
-              🎯 Smart Recommending System
-            </h3>
-            <p className="text-gray-700">
-              Recommend candidates by analyzing their interview performance
-              using AI-driven insights.
-            </p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-all">
+              <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-blue-100">
+                <Mic className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">AI Voice Interviews</h3>
+              <p className="text-slate-600 leading-relaxed">Natural conversation agents that can probe for deep technical knowledge across any domain.</p>
+            </div>
+
+            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-all">
+              <div className="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-indigo-100">
+                <BarChart3 className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Instant Analytics</h3>
+              <p className="text-slate-600 leading-relaxed">Get scored reports on communication, sentiment, and skill accuracy seconds after the call.</p>
+            </div>
+
+            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-all">
+              <div className="w-12 h-12 bg-cyan-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-cyan-100">
+                <Users className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Bias-Free Hiring</h3>
+              <p className="text-slate-600 leading-relaxed">Ensure every candidate gets a fair shot with consistent, objective evaluation metrics.</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="bg-white py-16 px-6 md:px-20">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-10">
-          Pricing Plans
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 border rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">Free</h3>
-            <p className="text-gray-600 mb-4">Ideal for beginners</p>
-            <ul className="text-gray-600 space-y-2 mb-4">
-              <li>✔️ 5 mock interviews/month</li>
-              <li>✔️ Basic feedback</li>
-              <li>❌ No real-time support</li>
+      <section id="pricing" className="py-24 bg-slate-50">
+        <div className="container mx-auto px-6 text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+          <p className="text-slate-600">Choose the plan that fits your recruiting volume.</p>
+        </div>
+
+        <div className="container mx-auto px-6 grid md:grid-cols-3 gap-8 max-w-6xl">
+          {/* Free */}
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
+            <h3 className="text-lg font-bold mb-2">Starter</h3>
+            <div className="mb-6"><span className="text-4xl font-bold">$0</span><span className="text-slate-500 text-sm"> /mo</span></div>
+            <ul className="space-y-4 mb-8 flex-1">
+              {["5 Interviews/mo", "Basic Feedback", "Web Interface"].map(i => (
+                <li key={i} className="flex items-center gap-3 text-sm text-slate-600"><CheckCircle2 className="w-4 h-4 text-blue-600" /> {i}</li>
+              ))}
             </ul>
-            <Button className="bg-blue-600 text-white w-full hover:bg-blue-700 cursor-pointer">
-              Get Started
-            </Button>
+            <Button variant="outline" className="w-full py-6 border-slate-200" onClick={handleAction}>Get Started</Button>
           </div>
-          <div className="p-6 border-2 border-blue-600 rounded-lg shadow-lg bg-blue-50">
-            <div className="flex flex-row justify-between">
-              <h3 className="text-xl font-semibold mb-2">Pro</h3>
-              <h3 className="text-[14px] font-semibold mb-2 text-white bg-blue-800 p-2 rounded-md">
-                Recommonded
-              </h3>
-            </div>
-            <p className="text-gray-600 mb-4">Best for job seekers</p>
-            <ul className="text-gray-600 space-y-2 mb-4">
-              <li>✔️ Unlimited interviews</li>
-              <li>✔️ AI voice assistant</li>
-              <li>✔️ Analytics & feedback</li>
+
+          {/* Pro */}
+          <div className="bg-white p-8 rounded-3xl border-2 border-blue-600 shadow-xl shadow-blue-100 flex flex-col relative transform md:-translate-y-4">
+            <div className="absolute top-0 right-8 transform -translate-y-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Most Popular</div>
+            <h3 className="text-lg font-bold mb-2">Pro Professional</h3>
+            <div className="mb-6"><span className="text-4xl font-bold">$49</span><span className="text-slate-500 text-sm"> /mo</span></div>
+            <ul className="space-y-4 mb-8 flex-1">
+              {["Unlimited Interviews", "AI Voice Assistant", "Full Analytics", "Custom Questions"].map(i => (
+                <li key={i} className="flex items-center gap-3 text-sm text-slate-600 font-medium"><CheckCircle2 className="w-4 h-4 text-blue-600" /> {i}</li>
+              ))}
             </ul>
-            <Button className="bg-blue-600 text-white w-full hover:bg-blue-700 cursor-pointer">
-              Upgrade Now
-            </Button>
+            <Button className="w-full py-6 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200" onClick={handleAction}>Upgrade Now</Button>
           </div>
-          <div className="p-6 border rounded-lg shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold mb-2">Enterprise</h3>
-            <p className="text-gray-600 mb-4">For HR teams</p>
-            <ul className="text-gray-600 space-y-2 mb-4">
-              <li>✔️ Team dashboard</li>
-              <li>✔️ API access</li>
-              <li>✔️ Dedicated support</li>
+
+          {/* Enterprise */}
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
+            <h3 className="text-lg font-bold mb-2">Enterprise</h3>
+            <div className="mb-6"><span className="text-4xl font-bold">Custom</span></div>
+            <ul className="space-y-4 mb-8 flex-1 text-left">
+              {["Team Management", "API Access", "Custom Branding", "Dedicated Account Manager"].map(i => (
+                <li key={i} className="flex items-center gap-3 text-sm text-slate-600"><CheckCircle2 className="w-4 h-4 text-blue-600" /> {i}</li>
+              ))}
             </ul>
-            <Button className="bg-blue-600 text-white w-full hover:bg-blue-700 cursor-pointer">
-              Contact Sales
-            </Button>
+            <Button variant="outline" className="w-full py-6 border-slate-200" onClick={() => setShowContactModal(true)}>Contact Sales</Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-10 px-6 md:px-20 mt-10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+      <footer className="bg-slate-900 text-slate-400 py-16 px-6">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-10 border-b border-slate-800 pb-12 mb-12">
           <div className="text-center md:text-left">
-            <h3 className="text-lg font-bold">AI Recruiter</h3>
-            <p className="text-sm text-gray-400">
-              © {new Date().getFullYear()} All rights reserved.
-            </p>
+            <div className="flex items-center gap-2 justify-center md:justify-start mb-4">
+              <Image src="/logo.png" alt="logo" height={30} width={30} className="brightness-200" />
+              <span className="text-white text-xl font-bold tracking-tight">AI Recruiter</span>
+            </div>
+            <p className="max-w-xs text-sm leading-relaxed">Empowering modern HR teams with reliable AI voice intelligence.</p>
           </div>
-          <div className="flex gap-6">
-            <a href="#" className="text-gray-400 hover:text-white">
-              Privacy Policy
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white">
-              Terms of Service
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white"
-              onClick={() => setShowContactModal(true)}
-            >
-              Contact
-            </a>
+
+          <div className="flex gap-10 text-sm">
+            <div className="flex flex-col gap-3">
+              <span className="text-white font-bold mb-2 uppercase text-[10px] tracking-widest">Platform</span>
+              <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
+              <a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a>
+            </div>
+            <div className="flex flex-col gap-3">
+              <span className="text-white font-bold mb-2 uppercase text-[10px] tracking-widest">Company</span>
+              <a href="#" className="hover:text-blue-400 transition-colors">About</a>
+              <button onClick={() => setShowContactModal(true)} className="text-left hover:text-blue-400 transition-colors">Contact</button>
+            </div>
+          </div>
+        </div>
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-xs">
+          <p>© {new Date().getFullYear()} AI-Recruiter Inc. All rights reserved.</p>
+          <div className="flex gap-6 mt-4 md:mt-0">
+            <a href="#" className="hover:text-white transition-colors">Privacy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms</a>
           </div>
         </div>
       </footer>
+
+      {/* Contact Modal */}
       {showContactModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-[90%] max-w-md shadow-lg relative">
-            <button
-              onClick={() => setShowContactModal(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 cursor-pointer"
-            >
-              ✕
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowContactModal(false)} />
+          <div className="relative bg-white p-8 rounded-3xl w-full max-w-sm shadow-2xl animate-in zoom-in-95">
+            <button onClick={() => setShowContactModal(false)} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-red-500 rounded-full hover:bg-slate-100 transition-all">
+              <X className="w-5 h-5" />
             </button>
-            <h2 className="text-xl font-semibold mb-4 text-center text-gray-800">
-              Contact Info
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-700">𝕏 Twitter(X):</span>
-                <a
-                  href="https://twitter.com/vipinSao1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  @vipinSao1
-                </a>
-              </div>
-            </div>
+            <h2 className="text-2xl font-bold mb-6 text-slate-900">Let's Talk</h2>
+            <p className="text-slate-600 mb-8">Reach out to us on X (Twitter) for fast responses or enterprise inquiries.</p>
+            <a href="https://twitter.com/vipinSao1" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 bg-slate-900 text-white w-full py-4 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg">
+              Follow @vipinSao1
+            </a>
           </div>
         </div>
       )}

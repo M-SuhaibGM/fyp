@@ -2,7 +2,7 @@
 import moment from "moment/moment";
 import React from "react";
 import CandidateFeedbackDialog from "./CandidateFeedbackDialog";
-import { SearchX, Trophy, Download, UserCheck, FileSpreadsheet } from "lucide-react";
+import { SearchX, Trophy, Download, UserCheck, FileSpreadsheet, Users, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,10 +38,8 @@ function CandidateList({ candidate }) {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-
     doc.setFontSize(18);
     doc.text("Candidate Ranking Report", 14, 22);
-
     doc.setFontSize(11);
     doc.setTextColor(100);
     doc.text(`Generated on: ${moment().format("LL")}`, 14, 30);
@@ -54,108 +52,145 @@ function CandidateList({ candidate }) {
       moment(c.created_at).format("DD MMM, YYYY")
     ]);
 
-    // Using the internal autoTable method that the plugin adds to doc
-    // We use (doc as any) or ignore if using JS to avoid linting errors
     autoTable(doc, {
       startY: 35,
       head: [['Rank', 'Full Name', 'Email Address', 'AI Score', 'Interview Date']],
       body: tableRows,
       theme: 'striped',
-      headStyles: { fillColor: [79, 70, 229] },
+      headStyles: { fillColor: [37, 99, 235] }, // Blue-600
       styles: { fontSize: 10 },
     });
 
     doc.save("Ranking_Report.pdf");
   };
+
   if (!candidate) return <CandidateListSkeleton />;
 
   if (candidate.length === 0) {
     return (
-      <div className="p-10 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-500 bg-white mt-5">
-        <SearchX className="w-10 h-10 mb-2" />
-        <h3 className="text-lg font-medium">No Candidate Records</h3>
+      <div className="p-20 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 bg-white mt-5">
+        <div className="p-4 bg-slate-50 rounded-full mb-4">
+          <SearchX className="w-12 h-12 text-slate-300" />
+        </div>
+        <h3 className="text-xl font-bold text-slate-800">No Candidate Records</h3>
+        <p className="text-sm">Candidates who complete the interview will appear here.</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between items-center my-6">
-        <div>
-          <h2 className="font-bold text-2xl text-slate-800 tracking-tight">
-            Candidates
-          </h2>
-          <p className="text-sm text-slate-500">Total {candidate?.length} participants</p>
+    <div className="w-full space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-3xl border border-blue-50 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-blue-50 rounded-2xl">
+            <Users className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h2 className="font-extrabold text-2xl text-slate-900 tracking-tight">
+              Candidate Pool
+            </h2>
+            <p className="text-sm font-medium text-slate-500">
+              Total <span className="text-blue-600">{candidate?.length}</span> participants screened by AI
+            </p>
+          </div>
         </div>
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="flex gap-2 items-center shadow-sm">
-              <Trophy className="h-4 w-4" /> Generate Ranking
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2 px-6 py-6 rounded-2xl shadow-lg shadow-blue-100 transition-all active:scale-95">
+              <Trophy className="h-5 w-5" /> Generate Ranking
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-xl">
-                <FileSpreadsheet className="text-green-600" />
-                Performance Ranking Sheet
-              </DialogTitle>
-              <DialogDescription>
-                Review and export candidate performance data sorted by AI evaluation.
-              </DialogDescription>
+          <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col p-0 border-none">
+            <DialogHeader className="p-8 bg-blue-600 text-white">
+              <div className="flex items-center gap-3">
+                <FileSpreadsheet className="w-8 h-8 opacity-80" />
+                <div>
+                  <DialogTitle className="text-2xl font-bold text-white">Performance Ranking</DialogTitle>
+                  <DialogDescription className="text-blue-100">
+                    Candidates sorted by AI evaluation score.
+                  </DialogDescription>
+                </div>
+              </div>
             </DialogHeader>
 
-            <div className="flex-1 overflow-auto my-4 border rounded-md">
-              <Table>
-                <TableHeader className="bg-slate-50">
-                  <TableRow>
-                    <TableHead className="w-[80px]">Rank</TableHead>
-                    <TableHead>Candidate</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead className="text-right">AI Score</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rankedCandidates.map((c, index) => (
-                    <TableRow key={index} className="hover:bg-slate-50/50">
-                      <TableCell className="font-bold">
-                        {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
-                      </TableCell>
-                      <TableCell className="font-medium uppercase">{c.userName}</TableCell>
-                      <TableCell className="text-slate-500">{c.userEmail}</TableCell>
-                      <TableCell className="text-right">
-                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
-                          {getAverageScore(c.feedback).toFixed(1)}/10
-                        </span>
-                      </TableCell>
+            <div className="flex-1 overflow-auto p-8">
+              <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                <Table>
+                  <TableHeader className="bg-slate-50">
+                    <TableRow className="hover:bg-transparent border-slate-100">
+                      <TableHead className="w-[100px] font-bold text-slate-800">Rank</TableHead>
+                      <TableHead className="font-bold text-slate-800">Candidate</TableHead>
+                      <TableHead className="font-bold text-slate-800 hidden md:table-cell">Email</TableHead>
+                      <TableHead className="text-right font-bold text-slate-800">AI Score</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {rankedCandidates.map((c, index) => (
+                      <TableRow key={index} className="hover:bg-blue-50/30 transition-colors border-slate-50">
+                        <TableCell className="py-4">
+                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-lg font-bold ${index === 0 ? "bg-amber-100 text-amber-700" :
+                              index === 1 ? "bg-slate-100 text-slate-700" :
+                                index === 2 ? "bg-orange-50 text-orange-700" : "text-slate-400"
+                            }`}>
+                            {index === 0 ? "1" : index === 1 ? "2" : index === 2 ? "3" : index + 1}
+                          </span>
+                        </TableCell>
+                        <TableCell className="font-bold text-slate-700">{c.userName.toUpperCase()}</TableCell>
+                        <TableCell className="text-slate-400 hidden md:table-cell text-sm">{c.userEmail}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="inline-flex flex-col items-end">
+                            <span className="text-sm font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                              {getAverageScore(c.feedback).toFixed(1)}/10
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
 
-            <div className="flex justify-end gap-3 mt-2">
-              <Button onClick={downloadPDF} variant="outline" className="gap-2 border-green-600 text-green-700 hover:bg-green-50">
-                <Download className="h-4 w-4" /> Export as PDF
+            <div className="p-6 bg-slate-50 flex justify-end gap-3 border-t">
+              <Button onClick={downloadPDF} className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-2 px-6">
+                <Download className="h-4 w-4" /> Export Report
               </Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
+      {/* Main List Grid */}
       <div className="grid gap-3">
         {candidate.map((c, ind) => (
-          <div key={ind} className="p-4 flex justify-between items-center bg-white rounded-xl border border-slate-200 hover:border-primary/50 transition-all">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 flex items-center justify-center bg-primary/10 text-primary font-bold rounded-full">
+          <div
+            key={ind}
+            className="group p-5 flex flex-col md:flex-row justify-between items-center bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 gap-4"
+          >
+            <div className="flex items-center gap-5 w-full md:w-auto">
+              <div className="h-12 w-12 flex items-center justify-center bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-100 transform group-hover:scale-110 transition-transform">
                 {c.userName[0].toUpperCase()}
               </div>
-              <div>
-                <h2 className="font-semibold text-slate-800 uppercase text-sm tracking-wide">{c?.userName}</h2>
-                <p className="text-xs text-slate-400">{moment(c?.created_at).format("DD MMM, YYYY")}</p>
+              <div className="flex flex-col">
+                <h2 className="font-bold text-slate-800 uppercase tracking-tight text-base">{c?.userName}</h2>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Calendar className="w-3 h-3" />
+                  <span className="text-xs font-medium">{moment(c?.created_at).format("DD MMM, YYYY")}</span>
+                </div>
               </div>
             </div>
-            <CandidateFeedbackDialog candidate={c} />
+
+            <div className="flex items-center justify-between w-full md:w-auto md:gap-8 border-t md:border-t-0 pt-4 md:pt-0">
+              <div className="flex flex-col items-start md:items-end">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</span>
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 flex items-center gap-1">
+                  <UserCheck className="w-3 h-3" /> Completed
+                </span>
+              </div>
+              <CandidateFeedbackDialog candidate={c} />
+            </div>
           </div>
         ))}
       </div>
@@ -165,12 +200,11 @@ function CandidateList({ candidate }) {
 
 function CandidateListSkeleton() {
   return (
-    <div className="mt-10 space-y-4">
-      <div className="flex justify-between">
-        <Skeleton className="h-10 w-48" />
-        <Skeleton className="h-10 w-32" />
+    <div className="space-y-6">
+      <Skeleton className="h-24 w-full rounded-3xl" />
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)}
       </div>
-      {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}
     </div>
   );
 }

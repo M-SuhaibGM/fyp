@@ -8,6 +8,10 @@ import { supabase } from "@/services/supabaseClient";
 import { useParams, useRouter } from "next/navigation";
 import InterviewInterface from "./_components/InterviewInterface";
 import InterviewControls from "./_components/InterviewControls";
+import MicTest from "./_components/MicTest";
+import { AlertCircle } from "lucide-react";
+
+
 
 function StartInterview() {
   const { interviewInfo } = useContext(InterviewDataContext);
@@ -18,11 +22,18 @@ function StartInterview() {
   const [loading, setLoading] = useState(false);
   const [startTimer, setStartTimer] = useState(false);
   const [resetTimer, setResetTimer] = useState(false);
+  const [isMicChecked, setIsMicChecked] = useState(false);
+  const [volume, setVolume] = useState(0);
   const { interview_id } = useParams();
   const router = useRouter();
 
   const totalQuestions = interviewInfo?.interviewData?.questions?.length || 5;
 
+
+  const handleMicReady = () => {
+    setIsMicChecked(true);
+    // The useEffect will catch isMicChecked being true and start the call
+  };
   const currentQuestionIndex = useMemo(() => {
     if (!conversation) return 1;
     try {
@@ -33,7 +44,7 @@ function StartInterview() {
   }, [conversation, totalQuestions]);
 
   useEffect(() => {
-    if (!interviewInfo || hasInterviewStarted) return;
+    if (!interviewInfo || hasInterviewStarted || !isMicChecked) return;
     vapi.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY);
 
     vapi.current.on("message", (message) => {
@@ -47,6 +58,9 @@ function StartInterview() {
       toast.success("Interview has started!");
       setStartTimer(false);
       setResetTimer(true);
+    });
+    vapi.current.on("volume-level", (level) => {
+      setVolume(level);
     });
     vapi.current.on("speech-end", () => {
       setStartTimer(true);
@@ -62,7 +76,10 @@ function StartInterview() {
       startCall();
       setHasInterviewStarted(true);
     }
-  }, [interviewInfo]);
+    vapi.current.on("speech-end", () => {
+      setVolume(0);
+    });
+  }, [interviewInfo, isMicChecked]);
 
   const startCall = () => {
     let questionList = interviewInfo?.interviewData?.questions.map((q, i) => `${i + 1}. ${q.question}`).join("\n");
@@ -95,20 +112,33 @@ function StartInterview() {
 
   return (
     <div className="p-10 lg:px-48 xl:px-56">
-      <InterviewInterface
-        interviewInfo={interviewInfo}
-        currentQuestionIndex={currentQuestionIndex}
-        totalQuestions={totalQuestions}
-        activeUser={activeUser}
-        startTimer={startTimer}
-        resetTimer={resetTimer}
-      />
+      {!isMicChecked ? (
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <MicTest onMicReady={handleMicReady} />
+          <p className="mt-5 text-gray-400 text-xs flex items-center gap-2">
+            <AlertCircle className="h-3 w-3" />
+            Your audio is only used for the interview and is not stored during this test.
+          </p>
+        </div>
+      ) : (
+        <>
+          <InterviewInterface
+            volume={volume}
+            interviewInfo={interviewInfo}
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={totalQuestions}
+            activeUser={activeUser}
+            startTimer={startTimer}
+            resetTimer={resetTimer}
+          />
 
-      <InterviewControls
-        loading={loading}
-        activeUser={activeUser}
-        onStop={() => vapi.current?.stop()}
-      />
+          <InterviewControls
+            loading={loading}
+            activeUser={activeUser}
+            onStop={() => vapi.current?.stop()}
+          />
+        </>
+      )}
     </div>
   );
 }

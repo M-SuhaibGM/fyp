@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
-import { Clock, Info, Loader2Icon, Video } from "lucide-react";
+import { Clock, Info, Loader2Icon, Video, User, Mail, Briefcase } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
@@ -12,11 +12,11 @@ import { InterviewDataContext } from "@/context/InterviewDataContext";
 function Interview() {
   const { interview_id } = useParams();
   const [interviewData, setInterviewData] = useState();
-  const [userName, setUserName] = useState();
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userEmail, setUserEmail] = useState();
 
-  const { interviewInfo, setInterviewInfo } = useContext(InterviewDataContext);
+  const { setInterviewInfo } = useContext(InterviewDataContext);
   const router = useRouter();
 
   const GetInterviewDetail = async () => {
@@ -26,124 +26,148 @@ function Interview() {
         .from("Interviews")
         .select("jobPosition,jobDescription,duration,type")
         .eq("interview_link", interview_id);
-      setInterviewData(Interviews[0]);
-      if (Interviews?.length === 0) {
-        toast("No Interview Found with this ID");
+      
+      if (!Interviews || Interviews.length === 0) {
+        toast.error("No Interview Found with this ID");
         return;
       }
-      setLoading(false);
+      setInterviewData(Interviews[0]);
     } catch (error) {
-      toast("Incorrect Interview Link", error);
+      toast.error("Error fetching interview details");
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    interview_id && GetInterviewDetail();
+    if (interview_id) GetInterviewDetail();
   }, [interview_id]);
 
   const onJoinInterview = async () => {
+    // Validation Check
+    if (!userName.trim() || !userEmail.trim()) {
+      toast.warning("Missing Information", {
+        description: "Please enter both your name and email to continue.",
+      });
+      return;
+    }
+
     setLoading(true);
-    let { data: Interviews, error } = await supabase
-      .from("Interviews")
-      .select("*")
-      .eq("interview_link", interview_id);
-    setInterviewInfo({
-      userName: userName,
-      userEmail: userEmail,
-      interviewData: Interviews[0],
-    });
-    router.push("/interview/" + interview_id + "/start");
-    setLoading(false);
+    try {
+      let { data: Interviews } = await supabase
+        .from("Interviews")
+        .select("*")
+        .eq("interview_link", interview_id);
+
+      setInterviewInfo({
+        userName: userName,
+        userEmail: userEmail,
+        interviewData: Interviews[0],
+      });
+
+      router.push(`/interview/${interview_id}/start`);
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100  w-full">
-      <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-lg flex flex-col items-center">
-        {/* Logo */}
-        <div className="flex items-center gap-2 mb-4">
-          <Image src="/logo.png" alt="Logo" width={40} height={40} />
-          <h1 className="text-2xl font-bold text-gray-700">AI-Recruiter</h1>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row border border-blue-100">
+        
+        {/* Left Side: Info Panel (Blue Theme) */}
+        <div className="bg-blue-600 p-8 md:w-2/5 text-white flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="bg-white p-2 rounded-lg">
+                <Image src="/logo.png" alt="Logo" width={30} height={30} />
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">AI-Recruiter</h1>
+            </div>
 
-        {/* Subtitle */}
-        <h2 className="text-gray-500 mb-2 text-center">
-          AI-Powered Interview Platform
-        </h2>
-
-        {/* Illustration Image */}
-        <Image
-          src="/interview.jpg"
-          alt="Interview Illustration"
-          width={100}
-          height={100}
-          className="mb-2"
-        />
-
-        {/* Title */}
-        <h2 className="text-xl font-semibold text-gray-800 text-center">
-          {interviewData?.jobPosition}
-        </h2>
-
-        {/* Timer */}
-        <div className="flex items-center gap-2 text-gray-500 text-sm mt-2 mb-2">
-          <Clock className="h-4 w-4" />
-          <span>{interviewData?.duration}</span>
-        </div>
-
-        {/* Input Section */}
-        <div className="w-full">
-          <label
-            className="block font-semibold text-gray-600 text-sm mb-1"
-            htmlFor="name"
-          >
-            Enter Your Full Name
-          </label>
-          <Input
-            id="name"
-            placeholder="e.g. John Smith"
-            className="w-full"
-            name="name"
-            onChange={(e) => setUserName(e.target.value)}
-          />
-        </div>
-        <div className="w-full">
-          <label
-            className="block  font-semibold text-gray-600 text-sm mb-1"
-            htmlFor="name"
-          >
-            Enter Your Email
-          </label>
-          <Input
-            id="email"
-            placeholder="e.g. Alex@gmail.com"
-            name="email"
-            className="w-full"
-            onChange={(e) => setUserEmail(e.target.value)}
-          />
-        </div>
-        <div className="p-3 bg-blue-100 flex gap-4 rounded-lg mt-2 flex-col">
-          <div className="flex items-center gap-2">
-            <Info className="w-4 h-4 mt-1 text-primary" />
-            <h2 className="font-bold">Before you begin</h2>
+            <h2 className="text-3xl font-extrabold mb-4 leading-tight">
+              Ready for your next big step?
+            </h2>
+            <p className="text-blue-100 mb-6">
+              You are about to start an AI-powered interview for:
+            </p>
+            
+            <div className="bg-blue-500/30 backdrop-blur-md rounded-xl p-4 border border-blue-400/30">
+              <div className="flex items-center gap-3 mb-2">
+                <Briefcase className="w-5 h-5 text-blue-200" />
+                <span className="font-semibold">{interviewData?.jobPosition || "Loading..."}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-blue-200" />
+                <span>{interviewData?.duration || "--"} Minutes</span>
+              </div>
+            </div>
           </div>
-          <ul>
-            <li className="text-sm text-primary">
-              - Test your camera and microphone
-            </li>
-            <li className="text-sm text-primary">
-              - Ensure you have a stable internet connection
-            </li>
-            <li className="text-sm text-primary">
-              - Find a Quiet place for interview
-            </li>
-          </ul>
+
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-3 text-blue-200">
+              <Info className="w-4 h-4" />
+              <span className="text-sm font-semibold uppercase tracking-wider">Instructions</span>
+            </div>
+            <ul className="space-y-2 text-sm text-blue-50">
+              <li className="flex gap-2"><span>•</span> Test camera & microphone</li>
+              <li className="flex gap-2"><span>•</span> Stable internet connection</li>
+              <li className="flex gap-2"><span>•</span> Find a quiet environment</li>
+            </ul>
+          </div>
         </div>
-        <Button
-          className={"mt-5 w-full font-bold flex items-center"}
-          disabled={loading || !userName}
-          onClick={() => onJoinInterview()}
-        >
-          <Video /> {loading && <Loader2Icon />} Join Interview
-        </Button>
+
+        {/* Right Side: Registration Form */}
+        <div className="p-8 md:p-12 md:w-3/5 flex flex-col justify-center">
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-gray-800">Candidate Details</h3>
+            <p className="text-gray-500">Please provide your info to begin the session.</p>
+          </div>
+
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <User className="w-4 h-4 text-blue-600" /> Full Name
+              </label>
+              <Input
+                placeholder="John Doe"
+                className="h-12 border-gray-200 focus:ring-blue-500 focus:border-blue-500"
+                onChange={(e) => setUserName(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-600" /> Email Address
+              </label>
+              <Input
+                type="email"
+                placeholder="john@example.com"
+                className="h-12 border-gray-200 focus:ring-blue-500 focus:border-blue-500"
+                onChange={(e) => setUserEmail(e.target.value)}
+              />
+            </div>
+
+            <Button
+              className="w-full h-12 text-lg font-bold bg-blue-600 hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 mt-4 group"
+              disabled={loading}
+              onClick={onJoinInterview}
+            >
+              {loading ? (
+                <Loader2Icon className="animate-spin mr-2" />
+              ) : (
+                <Video className="mr-2 group-hover:scale-110 transition-transform" />
+              )}
+              Join Interview
+            </Button>
+            
+            <p className="text-center text-xs text-gray-400 mt-4">
+              By clicking join, you agree to our platform terms and privacy policy.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

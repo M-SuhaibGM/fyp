@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/services/supabaseClient";
 import Image from "next/image";
 import React from "react";
@@ -42,7 +43,7 @@ export default function Login() {
         </div>
 
         <Image
-          src="/dumy.jpg" // (replace with your own illustration)
+          src="/dumy.webp" // (replace with your own illustration)
           alt="Illustration"
           width={400}
           height={400}
@@ -51,62 +52,85 @@ export default function Login() {
       </div>
 
       {/* RIGHT SIDE — Login Card */}
-      <div className="flex-1 flex items-center bg-blue-500 justify-center px-6">
-        <div className="bg-white shadow-xl rounded-3xl w-full max-w-md p-10">
+      <div className="flex-1 flex items-center bg-blue-600 justify-center px-6 min-h-screen">
+        <div className="bg-white shadow-2xl rounded-3xl w-full max-w-md p-10">
 
-          {/* Logo (mobile only) */}
-          <div className="lg:hidden flex justify-center mb-6">
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              height={100}
-              width={100}
-            />
+          {/* Logo (Visible on all to maintain branding) */}
+          <div className="flex justify-center mb-6">
+            <div className="bg-blue-50 p-3 rounded-2xl">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                height={60}
+                width={60}
+              />
+            </div>
           </div>
 
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Welcome Back
-          </h2>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
+              Welcome Back
+            </h2>
+            <p className="text-gray-500">
+              Sign in to your <span className="text-blue-600 font-semibold">AI Recruiter</span> account
+            </p>
+          </div>
 
-          <p className="text-gray-600 mb-8">
-            Sign in to continue using <span className="font-semibold">AI Recruiter</span>
-          </p>
+          {/* Manual Login Form */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
+              <div className="relative">
+                <Input
+                  type="email"
+                  placeholder="name@company.com"
+                  className="pl-4 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-sm font-semibold text-gray-700">Password</label>
+                <button className="text-xs text-blue-600 hover:underline">Forgot password?</button>
+              </div>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                className="pl-4 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+              />
+            </div>
+
+            <Button className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-100 transition-all active:scale-[0.98]">
+              Sign In
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center my-8">
+            <div className="flex-1 h-px bg-gray-100"></div>
+            <span className="px-4 text-gray-400 text-xs uppercase tracking-widest font-medium">or continue with</span>
+            <div className="flex-1 h-px bg-gray-100"></div>
+          </div>
 
           {/* Google Login Button */}
           <Button
             onClick={signInWithGoogle}
-            className="w-full py-6 text-md font-semibold flex items-center gap-3 bg-blue-600 text-white border hover:bg-gray-100"
+            className="w-full py-6 text-md font-semibold flex items-center justify-center gap-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl transition-all"
             variant="outline"
           >
             <Image
               src="/google.png"
               alt="google"
-              width={24}
-              height={24}
+              width={20}
+              height={20}
             />
-
-            Continue with Google
+            Google Account
           </Button>
 
-          {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-1 h-px bg-gray-300"></div>
-            <span className="px-3 text-gray-500 text-sm">or</span>
-            <div className="flex-1 h-px bg-gray-300"></div>
-          </div>
-
-          {/* Illustration Button (from your previous code) */}
-          <Image
-            src="/login.jpg"
-            alt="Login"
-            width={400}
-            height={200}
-            onClick={signInWithGoogle}
-            className="w-full h-48 object-cover rounded-xl cursor-pointer border hover:scale-[1.02] transition-all"
-          />
-
-          <p className="text-center text-gray-600 mt-4">
-            Continue using <span className="font-medium">Google Authentication</span>
+          <p className="text-center text-sm text-gray-500 mt-8">
+            Don't have an account?{" "}
+            <button className="text-blue-600 font-bold hover:underline">Create Account</button>
           </p>
 
         </div>
